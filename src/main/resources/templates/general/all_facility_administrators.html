@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header::head(${pageTitle})"></head>
+<body>
+<header th:replace="fragments/header::top(${roles},${loggedInUsername}, ${validUserLoggedIn}, ${pageTitle})"></header>
+<div class="container">
+    <div class="table-responsive">
+        <table class="table table-hover table-responsive">
+            <thead>
+                <th th:if="${fields}" th:each="feild: ${fields}" th:text="${feild.getName()}"></th>
+                <th th:unless="${fields}">
+                    Oops! list is empty... <a class="btn btn-info" href="/admin/register_facility_administrator">Add Facility Administrators</a>
+                </th>
+            </thead>
+
+            <tbody th:if="${allFacilityAdmins}">
+                <div th:each="facilityAdmin: ${allFacilityAdmins}" th:remove="tag">
+                    <tr>
+                        <td th:text="${facilityAdmin.id}"></td>
+                        <td th:text="${facilityAdmin.username}"></td>
+                        <td th:text="'********'"></td>
+                        <td th:text="${facilityAdmin.firstName}"></td>
+                        <td th:text="${facilityAdmin.lastName}"></td>
+                        <td>
+                            <div th:each="authority: ${facilityAdmin.facilityAuthorities}" th:remove="tag">
+                                <span th:text="${authority.authority.substring(5)}"></span>
+                                <span th:if="${facilityAdmin.facilityAuthorities.size()-1 !=
+                                                facilityAdmin.facilityAuthorities.indexOf(authority)}"
+                                      th:text="', '"></span>
+                            </div>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-primary editor"
+                                    th:attr="facAdmin-id=${facilityAdmin.id},
+                                             facAdmin-username=${facilityAdmin.username},
+                                             facAdmin-first=${facilityAdmin.firstName},
+                                             facAdmin-last=${facilityAdmin.lastName},
+                                             facAdmin-facilityAuths=${facilityAdmin.facilityAuthorities}"
+                            >Edit</button>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger deleter" th:attr="facAdmin-id=${facilityAdmin.id},
+                                             facAdmin-username=${facilityAdmin.username},
+                                             facAdmin-first=${facilityAdmin.firstName},
+                                             facAdmin-last=${facilityAdmin.lastName},
+                                             facAdmin-facilityAuths=${facilityAdmin.facilityAuthorities}"
+                            >Delete</button>
+                        </td>
+                    </tr>
+                </div>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="editModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit Facility Administrator #<span class="fac-admin-id"></span></h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form th:object="${facilityAdministrator}" th:action="@{/admin/view_all_facility_admins}" method="post">
+                        <div class="form-group">
+                            <label for="username">
+                                <strong>Username </strong>
+                                <span th:if="${#fields.hasErrors('username')}" class="text-danger" role="alert" th:errors="*{username}"></span>
+                                <span th:if="${usernameExists}" class="text-danger" role="alert" th:text="${usernameExists}"></span>
+                            </label>
+                            <input class="form-control fac-admin-username" id="username" name="username" th:field="*{username}" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">
+                                <strong>Password <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" title="8-20 characters one of the following a-z A-Z 0-9, no space or <>!" aria-hidden="true"></i> </strong>
+                            </label>
+                            <input class="form-control" id="password" name="password" th:field="*{password}" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="firstName">
+                                <strong>First Name</strong>
+                                <span th:if="${#fields.hasErrors('firstName')}" class="text-danger" role="alert" th:errors="*{firstName}"></span>
+                            </label>
+                            <input class="form-control fac-admin-first" id="firstName" name="firstName" th:field="*{firstName}" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">
+                                <strong>Last Name</strong>
+                                <span th:if="${#fields.hasErrors('lastName')}" class="text-danger" role="alert" th:errors="*{lastName}"></span>
+                            </label>
+                            <input class="form-control fac-admin-last" id="lastName" name="lastName" th:field="*{lastName}" type="text">
+                        </div>
+                        <input class="fac-admin-id-val" id="id" name="id" th:field="*{id}" type="text" hidden>
+                        <button type="submit" class="btn btn-primary">Make Changes</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div id="deleteModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Delete Facility Administrator #<span class="fac-admin-id"></span></h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+
+                    <form th:object="${facilityAdministrator}" th:action="@{/admin/delete_facility_admin}" method="post">
+                        <div class="form-group">
+                            <label for="username-delete">
+                                <strong>Username:</strong>
+                            </label>
+                            <input class="form-control fac-admin-username" id="username-delete" name="username" th:field="*{username}" type="text" disabled>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="firstName-delete">
+                                <strong>First Name:</strong>
+                            </label>
+                            <input class="form-control fac-admin-first" id="firstName-delete" name="firstName" th:field="*{firstName}" type="text" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName-delete">
+                                <strong>Last Name:</strong>
+                            </label>
+                            <input class="form-control fac-admin-last" id="lastName-delete" name="lastName" th:field="*{lastName}" type="text" disabled>
+                        </div>
+                        <input class="fac-admin-id-val" id="id-delete" name="id" th:field="*{id}" type="text" hidden>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="deleteErrorModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p th:text="${deleteError}"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<div th:replace="fragments/header::bottom">
+    <script src="webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="webjars/bootstrap/4.5.3/js/bootstrap.min.js"></script>
+    <script src="webjars/bootstrap/4.5.3/js/bootstrap.bundle.min.js"></script>
+</div>
+<script th:if="${error}">
+    $("#editModal").modal();
+</script>
+<script th:if="${deleteError}">
+    $("#deleteErrorModal").modal();
+</script>
+<script type="text/javascript">
+    $(".editor").click(function (e) {
+        let id = e.target.attributes.getNamedItem("facAdmin-id").value;
+        let username = e.target.attributes.getNamedItem("facAdmin-username").value;
+        let first = e.target.attributes.getNamedItem("facAdmin-first").value;
+        let last = e.target.attributes.getNamedItem("facAdmin-last").value;
+
+        $(".fac-admin-id").text(id);
+        $(".fac-admin-id-val").val(id);
+        $(".fac-admin-username").val(username);
+        $(".fac-admin-first").val(first);
+        $(".fac-admin-last").val(last);
+        /*$(".fac-admin-facilities").val(facilities);
+        $(".fac-admin-facilityAuths").val(facilityAuths);*/
+        $("#editModal").modal();
+    });
+
+    $(".deleter").click(function (e) {
+        let id = e.target.attributes.getNamedItem("facAdmin-id").value;
+        let username = e.target.attributes.getNamedItem("facAdmin-username").value;
+        let first = e.target.attributes.getNamedItem("facAdmin-first").value;
+        let last = e.target.attributes.getNamedItem("facAdmin-last").value;
+        /*let facilities = e.target.attributes.getNamedItem("facAdmin-facilities").value;
+        let facilityAuths = e.target.attributes.getNamedItem("facAdmin-facilityAuths").value;*/
+
+        $(".fac-admin-id").text(id);
+        $(".fac-admin-id-val").val(id);
+        $(".fac-admin-username").val(username);
+        $(".fac-admin-first").val(first);
+        $(".fac-admin-last").val(last);
+        /*$(".fac-admin-facilities").val(facilities);
+        $(".fac-admin-facilityAuths").val(facilityAuths);*/
+        $("#deleteModal").modal();
+    });
+</script>
+</body>
+</html>

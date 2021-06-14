@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:fragment="head(pageTitle)">
+        <meta charset="UTF-8">
+        <link rel="stylesheet"
+              href="/webjars/bootstrap/4.5.3/css/bootstrap.css">
+        <link rel="stylesheet" href="/css/styles.css">
+        <link rel="stylesheet" href="/webjars/fontawesome/4.7.0/css/font-awesome.css" type="text/css">
+        <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css">
+        <title th:text="${pageTitle}">MEER!</title>
+    </head>
+
+    <body>
+        <header th:fragment="top(roles, loggedInUsername, validUserLoggedIn, pageTitle)" th:remove="tag">
+            <div class="jumbotron">
+                <div class="container">
+                    <h1 class="display-4">Facility Maintenance Scheduling Program</h1>
+                    <h5 class="lead">Bringing Efficiency, Accountability, and ease expenditure concerns.</h5>
+                </div>
+            </div>
+            
+            <div th:if="${validUserLoggedIn}" class="navbar navbar-expand-md navbar-dark bg-dark">
+                <button class="navbar-toggler" type="button"
+                        data-toggle="collapse" data-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <div class="navbar-nav m-auto" id="navId">
+                        <a th:unless="${pageTitle == 'Home' || pageTitle == 'Admin Home' || pageTitle == 'Facility Admin Home'}"
+                           class="nav-item nav-link text-success border-right" th:href="@{/home}">Home</a>
+
+                        <div th:each="role: ${roles}" th:remove="tag">
+                            <a class="nav-item nav-link text-success border-right"
+                               th:if="${role == 'ROLE_ADMIN' && pageTitle != 'Register New Facility Administrator'}"
+                               th:href="@{/admin/register_facility_administrator}">Register New Facility Administrator</a>
+
+                            <a class="nav-item nav-link text-success border-right"
+                               th:if="${role == 'ROLE_FACILITY_ADMIN' && pageTitle != 'All Facilities'}"
+                               th:href="@{/facility/all}">All Facilities</a>
+
+                            <a class="nav-item nav-link text-success border-right"
+                               th:if="${role == 'ROLE_FACILITY_ADMIN' && pageTitle != 'Register New Custodian'}"
+                               th:href="@{/facility_admin/register_custodian}">Register New Custodian</a>
+
+                            <a class="nav-item nav-link text-success border-right"
+                               th:if="${role == 'ROLE_ADMIN' && pageTitle != 'All Facility Administrators'}"
+                               th:href="@{/admin/view_all_facility_admins}">All Facility Administrators</a>
+
+                            <a class="nav-item nav-link text-success border-right"
+                               th:if="${role == 'ROLE_FACILITY_ADMIN' && pageTitle != 'All Custodians'}"
+                               th:href="@{/facility_admin/view_all_custodians}">All Custodians</a>
+                        </div>
+
+                        <form th:action="@{/logout}" method="post" id="logout-form">
+                            <a href="#" class="logout nav-item nav-link text-success"
+                               onclick="document.getElementById('logout-form').submit();">Logout
+                                <span th:text="${' (' + loggedInUsername + ')'}" class="text-secondary"></span>
+                            </a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div th:fragment="bottom" th:remove="tag">
+            <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+            <script src="/webjars/popper.js/1.16.0/popper.js"></script>
+            <script src="/webjars/bootstrap/4.5.3/js/bootstrap.min.js"></script>
+            <script src="/webjars/bootstrap/4.5.3/js/bootstrap.bundle.min.js"></script>
+            <script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
+        </div>
+    </body>
+</html>

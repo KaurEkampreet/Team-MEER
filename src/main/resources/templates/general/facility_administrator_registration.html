@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header::head(${pageTitle})"></head>
+<body>
+    <header th:replace="fragments/header::top(${roles},${loggedInUsername}, ${validUserLoggedIn}, ${pageTitle})"></header>
+
+    <div class="container mt-2 mb-2">
+        <h1>Register New Facility Administrator</h1>
+
+        <form th:object="${facilityAdministrator}" th:action="@{/admin/register_facility_administrator}" method="post">
+
+            <div class="form-group">
+                <label for="username">
+                    <strong>Username </strong>
+                    <span th:if="${#fields.hasErrors('username')}" class="text-danger" role="alert" th:errors="*{username}"></span>
+                    <span th:if="${usernameExists}" class="text-danger" role="alert" th:text="${usernameExists}"></span>
+                </label>
+                <input class="form-control" id="username" name="username" th:field="*{username}" type="text">
+            </div>
+            <div class="form-group">
+                <label for="password">
+                    <strong>Password <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" title="8-20 characters one of the following a-z A-Z 0-9, no space or <>!" aria-hidden="true"></i> </strong>
+                    <span th:if="${passwordError}" class="text-danger" role="alert" th:text="${passwordError}"></span>
+                </label>
+                <input class="form-control" id="password" name="password" th:field="*{password}" type="text">
+            </div>
+            <div class="form-group">
+                <label for="firstName">
+                    <strong>First Name</strong>
+                    <span th:if="${#fields.hasErrors('firstName')}" class="text-danger" role="alert" th:errors="*{firstName}"></span>
+                </label>
+                <input class="form-control" id="firstName" name="firstName" th:field="*{firstName}" type="text">
+            </div>
+            <div class="form-group">
+                <label for="lastName">
+                    <strong>Last Name</strong>
+                    <span th:if="${#fields.hasErrors('lastName')}" class="text-danger" role="alert" th:errors="*{lastName}"></span>
+                </label>
+                <input class="form-control" id="lastName" name="lastName" th:field="*{lastName}" type="text">
+            </div>
+            <button type="submit" class="btn btn-light">Register</button>
+        </form>
+    </div>
+
+    <div th:replace="fragments/header::bottom">
+        <script src="webjars/jquery/3.5.1/jquery.js"></script>
+        <script src="webjars/bootstrap/4.5.3/js/bootstrap.min.js"></script>
+        <script src="webjars/bootstrap/4.5.3/js/bootstrap.bundle.min.js"></script>
+    </div>
+</body>
+</html>

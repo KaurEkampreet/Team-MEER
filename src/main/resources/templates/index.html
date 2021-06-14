@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/header::head(${pageTitle})"></head>
+    <body>
+        <header th:replace="fragments/header::top(${roles},${loggedInUsername}, ${validUserLoggedIn}, ${pageTitle})"></header>
+
+        <h1>Home</h1>
+
+        <div th:replace="fragments/header::bottom">
+            <script src="webjars/jquery/3.5.1/jquery.js"></script>
+            <script src="webjars/bootstrap/4.5.3/js/bootstrap.min.js"></script>
+            <script src="webjars/bootstrap/4.5.3/js/bootstrap.bundle.min.js"></script>
+        </div>
+    </body>
+</html>

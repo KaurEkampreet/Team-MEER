@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/header::head(${pageTitle})"></head>
+    <body>
+        <header th:replace="fragments/header::top(${roles},${loggedInUsername}, ${validUserLoggedIn}, ${pageTitle})"></header>
+
+        <div class="container align-content-center">
+            <h2 class="text-center" th:text="${zone.zoneName}">Custodian</h2>
+
+            <table class="table table-active" id ="roomsTable">
+                <thead class="table-dark">
+                <th>Zone Name</th>
+                <th>Room Number</th>
+                <th>Room Type</th>
+                <th></th>
+                </thead>
+                <tbody id = "zoneData">
+                <div th:each="room: ${rooms}"  th:remove="tag">
+                    <tr>
+                        <td th:text="${zone.zoneName}"></td>
+                        <td th:text="${room.roomNumber}"></td>
+                        <td th:text="${room.roomType}"></td>
+                        <td th:unless="${room.roomType.equals('Unassigned')}">
+                            <button type="button" class="btn btn-primary editor">Edit Room</button>
+                        </td>
+                    </tr>
+                </div>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:replace="fragments/header::bottom">
+            <script src="webjars/jquery/3.5.1/jquery.js"></script>
+            <script src="webjars/bootstrap/4.5.3/js/bootstrap.min.js"></script>
+            <script src="webjars/bootstrap/4.5.3/js/bootstrap.bundle.min.js"></script>
+        </div>
+    </body>
+</html>

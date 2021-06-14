@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+    <head th:replace="fragments/header::head(${pageTitle})"></head>
+<body>
+    <header th:replace="fragments/header::top(${roles},${loggedInUsername}, ${validUserLoggedIn}, ${pageTitle})"></header>
+
+    <div class="container align-content-center">
+        <div th:each="role:${roles}" th:unless="${role == 'ROLE_CUSTODIAN' || role == 'ROLE_USER'} ">
+            <h1 class="text-center">Manage</h1>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${custodian.firstName} + ' ' + ${custodian.lastName}">Card title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted"><strong>Custodian Id:</strong> <span th:text="${custodian.id}"></span></h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <strong>Username:</strong> <span th:text="${custodian.username}"></span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>First Name:</strong> <span th:text="${custodian.firstName}"></span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Last Name:</strong> <span th:text="${custodian.lastName}"></span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Start Date:</strong> <span th:text="${custodian.startDate}"></span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Status:</strong> <span th:text="${custodian.status}"></span>
+                            </li>
+                            <div th:each="role:${roles}" th:unless="${role == 'ROLE_CUSTODIAN' || role == 'ROLE_USER'} " th:remove="tag">
+                                <li class="list-group-item">
+                                    <strong>Cleaning Level:</strong> <span th:text="${custodian.cleaningLevel}"></span>
+                                </li>
+                            </div>
+                            <div th:each="role:${roles}" th:unless="${role == 'ROLE_CUSTODIAN' || role == 'ROLE_USER'} ">      
+                                 <button class="btn btn-primary" id="editCustodianModal">Edit Custodian</button>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title mb-2 text-muted">Assignment</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <strong>Facility: </strong>
+                                <span th:text="${facilityForCustodian.getFacilityName()}"></span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Zone: </strong>
+                                <span th:text="${zoneForCustodian.getZoneName()}"></span>
+                            </li>
+                        </ul>
+                        <div th:each="role:${roles}" th:unless="${role == 'ROLE_CUSTODIAN' || role == 'ROLE_USER'} ">
+                            <button class="btn btn-primary" id="assignmentModal">Change Assignment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title">
+                            <div class="row">
+                                <div class="col">
+                                    <h5>Rooms Assigned To Zone</h5>
+                                </div>
+                                <div class="col">
+                                    <div th:each="role:${roles}" th:unless="${role == 'ROLE_CUSTODIAN' || role == 'ROLE_USER'}" th:remove="tag">
+                                        <a class="btn btn-primary"th:href="@{'/manage_custodian/viewzone/' + ${custodian.getZoneId()}}">Manage Zone</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <table class="table table-active" data-toggle="table">
+                            <thead class="thead-dark">
+                                <th>Room Type</th>
+                                <th>Room Number</th>
+                            </thead>
+                            <tbody>
+                                <div th:each="room: ${roomsForCustodian}">
+                                    <tr th:if="${!room.roomType.equals('Unassigned')}">
+                                        <td th:text="${room.getRoomType()}"></td>
+                                        <td th:text="${room.getRoomNumber()}"></td>
+                                    </tr>
+                                </div>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="changeAssignment" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Change Assignments for <span th:text="${custodian.getFirstName() + ' ' + custodian.getLastName()} "></span></h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form th:object="${custodian}" th:action="@{/manage_custodian/assignment/change/}" method="post">
+                        <div class="form-group">
+                            <label for="facility">
+                                <strong>Facility</strong>
+                                <!--<span th:if="${#fields.hasErrors('username')}" class="text-danger" role="alert" th:errors="*{username}"></span>
+                                <span th:if="${usernameExists}" class="text-danger" role="alert" th:text="${usernameExists}"></span>-->
+                            </label>
+                            <select class="form-control" id="facility" name="facility">
+                                <option th:each="facility: ${facilitiesByFacAdminId}"
+                                    th:value="${facility.getId()}"
+                                    th:text="${facility.getFacilityName()}"
+                                    th:selected="(${facility.getId()}==${facilityForCustodian.getId()})">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="zone">
+                                <strong>Zone</strong>
+                                <!--<span th:if="${#fields.hasErrors('username')}" class="text-danger" role="alert" th:errors="*{username}"></span>
+                                <span th:if="${usernameExists}" class="text-danger" role="alert" th:text="${usernameExists}"></span>-->
+                            </label>
+                            <select class="form-control" id="zone" name="zoneId" th:field="*{zoneId}">
+                                <option
+                                    th:each="zone: ${allZonesList}"
+                                    th:attr="facilityId=${zone.getFacilityId()}"
+                                    th:value="${zone.getId()}"
+                                    th:text="${zone.getZoneName()}"
+                                    th:selected="(${zone.getId()}==${zoneForCustodian.getId()})">
+                                </option>
+                            </select>
+                        </div>
+                        <input type="text" th:value="${custodian.username}" name="username" th:field="*{username}" hidden="true">
+                        <button type="submit" class="btn btn-primary">Change Assignment</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit details for <span th:text="${custodianToEdit.getUsername()} "></span></h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form th:object="${custodianToEdit}" th:action="@{/manage_custodian/edit}" method="post">
+                        <div class="form-group">
+                            <label for="username">
+                                <strong>Username </strong>
+                                <span th:if="${#fields.hasErrors('username')}" class="text-danger" role="alert" th:errors="*{username}"></span>
+                                <span th:if="${usernameExists}" class="text-danger" role="alert" th:text="${usernameExists}"></span>
+                            </label>
+                            <input class="form-control fac-admin-username" id="username" name="username" th:field="*{username}" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="firstName">
+                                <strong>First Name </strong>
+                                <span th:if="${#fields.hasErrors('firstName')}" class="text-danger" role="alert" th:errors="*{firstName}"></span>
+                            </label>
+                            <input class="form-control fac-admin-first" id="firstName" name="firstName" th:field="*{firstName}" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">
+                                <strong>Last Name </strong>
+                                <span th:if="${#fields.hasErrors('lastName')}" class="text-danger" role="alert" th:errors="*{lastName}"></span>
+                            </label>
+                            <input class="form-control fac-admin-last" id="lastName" name="lastName" th:field="*{lastName}" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="startDate">
+                                <strong>Start Date <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" title="" aria-hidden="true"></i> </strong>
+                            </label>
+                            <input class="form-control" id="startDate" name="startDate" th:field="*{startDate}" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="status">
+                                <strong>Status<i class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" title="" aria-hidden="true"></i> </strong>
+                            </label>
+                            <input class="form-control" id="status" name="status" th:field="*{status}" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="cleaningLevel">
+                                <strong>Cleaning Level<i class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" title="" aria-hidden="true"></i> </strong>
+                            </label>
+                            <input class="form-control" id="cleaningLevel" name="cleaningLevel" th:field="*{cleaningLevel}" type="text">
+                        </div>
+                        <input class="custodian-id-val" id="id" name="id" th:field="*{id}" th:value="${custodian.getId()}" type="text" hidden>
+                        <button type="submit" class="btn btn-primary">Make Changes</button>
+                    </form>
+                    <div id="test" th:if="${errors}">
+                        <span th:each="error: ${errors}"
+                        th:text="${error.getDefaultMessage()}"></span>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="fragments/header::bottom">
+    </div>
+    <script th:if="${errors}">
+        $("#editModal").modal();
+    </script>
+    <script type="text/javascript">
+
+        let getZones = function () {
+
+            let facilityId = $('#facility').val();
+
+            let zones = document.getElementById("zone").options;
+
+            for (let i = 0; i < zones.length; i++) {
+                if (zones[i].getAttribute("facilityId") !== facilityId) {
+                    zones[i].style.display = "none";
+                } else {
+                    zones[i].style.display = "";
+                }
+            }
+        }
+
+        getZones();
+
+        $('#facility').change(function () {
+
+            let facilityId = $('#facility').val();
+
+            let zones = document.getElementById("zone").options;
+
+            for (let i = 0; i < zones.length; i++) {
+                zones[i].selected = false;
+                if (zones[i].getAttribute("facilityId") !== facilityId) {
+                    zones[i].style.display = "none";
+                } else {
+                    zones[i].style.display = "";
+                }
+            }
+        });
+        
+        $("#assignmentModal").click(function (e) {
+
+            $("#changeAssignment").modal();
+        });
+      
+        $("#editCustodianModal").click(function (e) {
+
+            $("#editModal").modal();
+        });
+        </script>
+</body>
+</html>

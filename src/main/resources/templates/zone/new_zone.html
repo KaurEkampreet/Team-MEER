@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/header::head(${pageTitle})"></head>
+    <body>
+        <header th:replace="fragments/header::top(${roles},${loggedInUsername}, ${validUserLoggedIn}, ${pageTitle})"></header>
+
+        <div class="container mt-2 mb-2">
+            <form th:object="${zone}" th:action="@{${'/facility/zone/new/'+facilityId}}" method="post">
+
+
+                <div class="form-group">
+                    <label for="zoneName">
+                        <strong>Name</strong>
+                        <span th:if="${error}" class="text-danger" role="alert" th:text="${error}"></span>
+                    </label>
+                    <input class="form-control" id="zoneName" name="zoneName" th:field="*{zoneName}" type="text">
+                </div>
+
+                <button type="submit" class="btn btn-light">Add Zone</button>
+            </form>
+        </div>
+
+
+        <div th:replace="fragments/header::bottom"></div>
+    </body>
+</html>

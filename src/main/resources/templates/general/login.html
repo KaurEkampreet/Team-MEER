@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/header::head(${pageTitle})"></head>
+    <body>
+
+        <header th:replace="fragments/header::top(${roles},${loggedInUsername}, ${validUserLoggedIn}, ${pageTitle})"></header>
+
+        <div class="container">
+            <div th:if="${message}">
+                <div class="alert alert-danger" role="alert" th:text="${message}"></div>
+            </div>
+
+            <form  th:action="@{/login}" method="post">
+                <div class="form-group">
+                    <label for="username"><strong>Username</strong></label>
+                    <input class="form-control" id="username" name="username" type="text"
+                           placeholder="Enter Username">
+                </div>
+                <div class="form-group">
+                    <label for="password"><strong>Password</strong></label>
+                    <input class="form-control" id="password" name="password" type="password"
+                           placeholder="Enter Password">
+                </div>
+
+                <button type="submit" class="btn btn-light">Login</button>
+                <!--<button type="button" class="btn btn-light">
+                    <a class="text-dark" th:href="@{/register}">Register</a>
+                </button>-->
+            </form>
+        </div>
+
+        <div th:replace="fragments/header::bottom"></div>
+    </body>
+</html>

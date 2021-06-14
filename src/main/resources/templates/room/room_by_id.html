@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header::head(${pageTitle})"></head>
+<body>
+<header th:replace="fragments/header::top(${roles},${loggedInUsername}, ${validUserLoggedIn}, ${pageTitle})"></header>
+
+
+
+    <div class="container align-content-center">
+        <h1 class="text-center">Manage Room: <strong th:text = "${room.roomNumber}"></strong></h1>
+        <ul class="list-group list-group-flush float-left">
+            <li class="list-group-item">
+                <strong>RoomType:</strong> <span th:text="${room.roomType}"></span>
+            </li>
+            <li class="list-group-item">
+                <strong>Room Number:</strong> <span th:text="${room.roomNumber}"></span>
+            </li>
+            <li class="list-group-item">
+                <strong>Square Footage:</strong> <span th:text="${room.squareFootage}"></span>
+            </li>
+        </ul>
+        <ul class="list-group list-group-flush float-right">
+            <li class="list-group-item">
+                <strong>Zone:</strong> <span th:text="${zone.zoneName}"></span>
+            </li>
+            <li class="list-group-item">
+                <strong>Facility:</strong> <span th:text="${facility.facilityName}"></span>
+            </li>
+        </ul>
+
+    </div>
+
+
+<div th:replace="fragments/header::bottom">
+</div>
+</body>
+</html>

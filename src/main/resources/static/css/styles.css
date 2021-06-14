@@ -1,0 +1,10 @@
+.jumbotron {
+    background-color: skyblue;
+    background-image: url("../images/clean.png");
+    background-size: cover;
+    border-radius: 0;
+    color: black;
+    margin: 0;
+    padding: 150px;
+    text-align: center;
+}

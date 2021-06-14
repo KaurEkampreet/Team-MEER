@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header::head(${pageTitle})"></head>
+<body>
+<header th:replace="fragments/header::top(${roles},${loggedInUsername}, ${validUserLoggedIn}, ${pageTitle})"></header>
+
+    <div class ="container">
+        <h1>New Room For: <strong th:text="${facility.facilityName}"></strong></h1>
+
+
+
+        <form th:object="${room}" th:action="@{'/facility/room/new/'+${facility.id}}" method="post">
+
+            <div class="form-group">
+                <label for="zoneId">
+                    <strong>Zone: </strong>
+                    <span th:if="${zoneError}" class="text-danger" role="alert" th:text="${zoneError}"></span>
+                </label>
+                <select class="form-control" id="zoneId" name="zoneId">
+                    <option th:each="zone: ${zones}"
+                            th:value="${zone.id}"
+                            th:text="${zone.zoneName}"
+                            th:selected="(${currentZoneId}==${zone.id})">
+                    </option>
+                </select>
+            </div>
+            <!--
+            If we create a roomtype priority list get from list
+            <div class="form-group">
+                <label for="roomType">
+                    <strong>RoomType: </strong>
+                </label>
+                <select class="form-control" id="roomType" name="roomType" th:field="*{roomType}">
+                    <option th:each="roomType: ${roomTypes}" th:value="${roomType.id}" th:text="${roomType.name}"></option>
+                </select>
+                <span><a>Add New Room Type</a></span>
+            </div>
+            -->
+
+            <!-- Replace with above style of code later -->
+
+            <div class="form-group">
+                <label for="roomType">
+                    <strong>Room Type</strong>
+                    <span th:if="${roomTypeError}" class="text-danger" role="alert" th:text="${roomTypeError}"></span>
+                </label>
+                <input class="form-control" id="roomType" name="roomType" th:field="*{roomType}" type="text">
+
+            </div>
+
+
+
+            <div class="form-group">
+                <label for="roomNumber">
+                    <strong>Room Number</strong>
+                    <span th:if="${roomNumberError}" class="text-danger" role="alert" th:text="${roomNumberError}"></span>
+                </label>
+                <input class="form-control" id="roomNumber" name="roomNumber" th:field="*{roomNumber}" type="text">
+
+            </div>
+
+            <div class="form-group">
+                <label for="squareFootage">
+                    <strong>Square Footage</strong>
+                    <span th:if="${squareFootageError}" class="text-danger" role="alert" th:text="${squareFootageError}"></span>
+                </label>
+                <input class="form-control" id="squareFootage" name="squareFootage" th:field="*{squareFootage}" type="text">
+
+            </div>
+            <button type="submit" class="btn btn-light">Register</button>
+        </form>
+
+    </div>
+
+<div th:replace="fragments/header::bottom">
+    <script src="webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="webjars/bootstrap/4.5.3/js/bootstrap.min.js"></script>
+    <script src="webjars/bootstrap/4.5.3/js/bootstrap.bundle.min.js"></script>
+</div>
+</body>
+</html>

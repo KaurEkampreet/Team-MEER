@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/header::head(${pageTitle})"></head>
+    <body>
+        <header th:replace="fragments/header::top(${roles},${loggedInUsername}, ${validUserLoggedIn}, ${pageTitle})"></header>
+
+        <h1 class="text-center" th:text="${scheduleId}"></h1>
+
+        <div class="text-center">
+        <table class="table">
+            <tbody>
+                <tr class="table-dark">
+                    <th>Schedule</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td>******</td>
+                    <td>******</td>
+                </tr>
+                <tr>
+                    <td>******</td>
+                    <td>******</td>
+                </tr>
+                <tr>
+                    <td>******</td>
+                    <td>******</td>
+                </tr>
+            </tbody>
+        </div>
+
+
+        </table>
+
+        <div th:replace="fragments/header::bottom">
+            <script src="webjars/jquery/3.5.1/jquery.js"></script>
+            <script src="webjars/bootstrap/4.5.3/js/bootstrap.min.js"></script>
+            <script src="webjars/bootstrap/4.5.3/js/bootstrap.bundle.min.js"></script>
+        </div>
+    </body>
+</html>

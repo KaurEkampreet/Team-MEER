@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/header::head(${pageTitle})"></head>
+    <body>
+        <header th:replace="fragments/header::top(${roles},${loggedInUsername}, ${validUserLoggedIn}, ${pageTitle})"></header>
+
+        <div class="container mt-2 mb-2">
+
+
+            <h1 th:text = "${loggedInUsername}"></h1>
+            <h2>Add New Facility</h2>
+
+            <form th:object="${facility}" th:action="@{/facility/new}" method="post">
+
+                <div class="form-group">
+                    <label for="facilityName">
+                        <strong>Name</strong>
+                        <span th:if="${error}" class="text-danger" role="alert" th:text="${error}"></span>
+                    </label>
+                    <input class="form-control" id="facilityName" name="facilityName" th:field="*{facilityName}" type="text">
+                </div>
+
+                <button type="submit" class="btn btn-light">Add Facility</button>
+            </form>
+        </div>
+
+
+
+        <div th:replace="fragments/header::bottom"></div>
+    </body>
+</html>

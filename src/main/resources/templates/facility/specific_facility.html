@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/header::head(${pageTitle})"></head>
+    <body>
+        <header th:replace="fragments/header::top(${roles},${loggedInUsername}, ${validUserLoggedIn}, ${pageTitle})"></header>
+
+        <div class="container align-content-center">
+            <span class="float-left"><a th:href="@{/facility/all}">All Facilities</a></span>
+            <h2 class="text-center" th:text="${facility.facilityName}">Facility</h2>
+
+            <span><a th:href="@{${'/facility/zone/new/'+facility.id}}">Add New Zone</a></span>
+            <span><a class="float-right" th:href="@{'/facility/room/new/' + ${facility.id} +'/-1'}">Add New Room</a></span>
+
+            <table class="table table-active" id="zonesTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Zone Id</th>
+                        <th>Zone Name</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="zone: ${zones}">
+                        <td th:text="${zone.id}"></td>
+                        <td th:text="${zone.zoneName}"></td>
+                        <td>
+                            <a class="btn btn-primary" th:href="@{'/facility/room/new/' + ${facility.id}+'/'+${zone.id}}">Add Room</a>
+                        </td>
+                        <td th:unless="${zone.zoneName.equals('Unassigned')}">
+                            <button class="btn btn-danger zoneDeleter"
+                               th:attr="currentZoneId = ${zone.id},
+                               currentZoneName = ${zone.zoneName},
+                               currentZoneFacilityId = ${zone.facilityId}">Remove Zone</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <label for="currentZone"><strong>Current Zone: </strong></label>
+            <select id="currentZone">
+                <option value="all">All</option>
+                <div th:each="zone: ${zones}"  th:remove="tag">
+                    <option th:text="${zone.getZoneName()}"
+                            th:value="${zone.getZoneName()}">
+                    </option>
+                </div>
+            </select>
+
+
+            <table class="table table-active" id ="roomsTable">
+                <thead class="table-dark">
+                    <th>Zone</th>
+                    <th>Room Number</th>
+                    <th>Room Type</th>
+                    <th></th>
+                </thead>
+                <tbody id = "zoneData">
+                    <div th:each="zone: ${zones}"  th:remove="tag">
+                        <tr th:each="room: ${rooms}" th:if="${zone.getId() == room.getZoneId()}">
+                            <td th:text="${zone.zoneName}"></td>
+                            <td th:text="${room.roomNumber}"></td>
+                            <td th:text="${room.roomType}"></td>
+                            <td th:unless="${room.roomType.equals('Unassigned')}">
+                                <button type="button" class="btn btn-primary editor">Change Zone</button>
+                            </td>
+                        </tr>
+                    </div>
+                </tbody>
+            </table>
+
+            <div id="deleteZoneModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Delete Zone #<span class="zone-id"></span></h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <form th:object="${tempZone}" th:action="@{/facility/zone/delete}" method="post">
+
+                            <div class="form-group">
+                                <label for="zoneName">
+                                    <strong>Zone Name:</strong>
+                                </label>
+                                <input class="form-control zone-name" id="zoneName" name="zoneName" th:field="*{zoneName}" type="text" disabled>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="facilityId">
+                                    <strong>Facility Id:</strong>
+                                </label>
+                                <input class="form-control fac-id" id="facilityId" name="facilityId" th:field="*{facilityId}" type="text" disabled>
+                            </div>
+
+                            <input class="zone-id-val" id="id-delete" name="id" th:field="*{id}" type="text" hidden="true">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+
+        <div th:replace="fragments/header::bottom">
+                <script src="webjars/jquery/3.5.1/jquery.js"></script>
+                <script src="webjars/bootstrap/4.5.3/js/bootstrap.min.js"></script>
+                <script src="webjars/bootstrap/4.5.3/js/bootstrap.bundle.min.js"></script>
+        </div>
+
+        <script>
+            const roomTableRows = document.getElementById("zoneData").getElementsByTagName("tr");
+
+            $("#currentZone").change(function e(){
+                resetRoomTable();
+            });
+
+
+
+            function resetRoomTable() {
+                let filter, roomZoneNameTD, roomTypeTD
+
+                filter = $("#currentZone").val();
+
+                for(let i = 0; i < roomTableRows.length; i++){
+                    roomZoneNameTD = roomTableRows[i].getElementsByTagName("td")[0];
+                    if (roomZoneNameTD.innerHTML === filter || filter === "all") {
+                        roomTableRows[i].style.display = "";
+                    } else {
+                        roomTableRows[i].style.display = "none";
+                    }
+                }
+            }
+
+            $(".zoneDeleter").click(function (e){
+                let id = e.target.attributes.getNamedItem("currentZoneId").value;
+                let name = e.target.attributes.getNamedItem("currentZoneName").value;
+                let facId = e.target.attributes.getNamedItem("currentZoneFacilityId").value;
+
+                $(".zone-id").text(id);
+                $(".zone-id-val").val(id);
+                $(".zone-name").val(name);
+                $(".fac-id").val(facId);
+
+                $("#deleteZoneModal").modal();
+            });
+
+
+        </script>
+    </body>
+</html>

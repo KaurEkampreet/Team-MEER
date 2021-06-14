@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/header::head(${pageTitle})"></head>
+    <body>
+        <header th:replace="fragments/header::top(${roles},${loggedInUsername}, ${validUserLoggedIn}, ${pageTitle})"></header>
+
+        <div class="container">
+            <h1 th:text = "${loggedInUsername}"></h1>
+            <h2>Facilities</h2>
+
+            <div class="container">
+                <table class="table table-hover table-responsive">
+                    <thead>
+                        <th>Name</th>
+
+                    </thead>
+                    <tbody>
+                        <div th:each="facility: ${facilities}">
+                            <tr>
+                                <td th:text="${facility.getFacilityName()}" >1</td>
+                                <td><a th:href="@{'/facility/view/' + ${facility.getId()}}">View</a></td>
+                            </tr>
+                        </div>
+                        <tr><td><a th:href="@{/facility/new}">add new</a></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <div th:replace="fragments/header::bottom"></div>
+    </body>
+</html>
